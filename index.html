@@ -35,6 +35,7 @@
       --color-link:  #3B82F6;
       --color-note:  #10B981;
       --color-code:  #A78BFA;
+      --color-file:  #EC4899;
       --color-info:  #F59E0B;
 
       /* Text */
@@ -1124,6 +1125,195 @@
       word-break: break-all;
     }
 
+    /* File Card & Dropzone Styling */
+    .files-container {
+      position: relative;
+      background: #090B10;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.light .files-container {
+      background: #F8F9FD;
+    }
+
+    .files-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #141722;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    body.light .files-header-bar {
+      background: #EDF0F7;
+      color: var(--text-secondary);
+    }
+
+    .files-grid-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .card.is-maximized .files-grid-list {
+      max-height: calc(100vh - 280px) !important;
+    }
+
+    .file-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      transition: all 0.15s ease;
+    }
+
+    .file-item-row:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-hover);
+    }
+
+    .file-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-type-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .file-thumb-preview {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .file-item-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-item-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-item-size {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .btn-file-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      border-radius: var(--r-sm) !important;
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text-primary) !important;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .btn-file-download:hover {
+      background: var(--accent-primary) !important;
+      border-color: var(--accent-primary) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Modal File Dropzone */
+    .file-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--r-md);
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-surface);
+      transition: all 0.2s ease;
+    }
+
+    .file-dropzone:hover, .file-dropzone.drag-over {
+      border-color: var(--accent-primary);
+      background: var(--bg-hover);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .dropzone-icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .dropzone-text {
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .dropzone-subtext {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .modal-files-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .modal-file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 12px;
+    }
+
     /* Card Footer & Tags */
     .card-footer {
       display: flex;
@@ -1692,6 +1882,7 @@
         <button class="type-btn" data-filter="link" onclick="setTypeFilter('link')">🔗 Links</button>
         <button class="type-btn" data-filter="note" onclick="setTypeFilter('note')">📝 Notes</button>
         <button class="type-btn" data-filter="code" onclick="setTypeFilter('code')">💻 Code</button>
+        <button class="type-btn" data-filter="file" onclick="setTypeFilter('file')">📁 Files</button>
         <button class="type-btn" data-filter="info" onclick="setTypeFilter('info')">ℹ Info</button>
       </div>
 
@@ -1769,6 +1960,10 @@
             <span style="font-size: 18px;">💻</span>
             <span>Code</span>
           </button>
+          <button type="button" class="type-switch-btn" data-type="file" onclick="switchModalType('file')">
+            <span style="font-size: 18px;">📁</span>
+            <span>Files</span>
+          </button>
           <button type="button" class="type-switch-btn" data-type="info" onclick="switchModalType('info')">
             <span style="font-size: 18px;">ℹ</span>
             <span>Info</span>
@@ -1845,7 +2040,35 @@
           </div>
         </div>
 
-        <!-- 4. Info Fields -->
+        <!-- 4. File Fields -->
+        <div id="typeFieldsFile" class="type-field-group" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Upload Files (Single or Bulk)</label>
+            <div class="file-dropzone" id="modalFileDropzone" onclick="document.getElementById('modalFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropFiles(event)">
+              <input type="file" id="modalFileInput" style="display: none;" multiple onchange="handleFileInputChange(event)">
+              <div class="dropzone-icon">📁</div>
+              <div class="dropzone-text">
+                <strong>Click to browse</strong> or drag & drop files here
+              </div>
+              <div class="dropzone-subtext">
+                Supports all files (images, pdfs, audio, videos, archives, docs, code, binaries)
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <label class="form-label" style="margin: 0;">Uploaded Files (<span id="modalFileCount">0</span>)</label>
+              <button type="button" class="btn btn-sm" onclick="clearModalFiles()" style="font-size: 11px; padding: 1px 6px;">Clear All</button>
+            </div>
+            <div id="modalFilesList" class="modal-files-list"></div>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label class="form-label" for="cardFileDescInput">Description (Optional)</label>
+            <textarea id="cardFileDescInput" class="form-textarea" placeholder="Add any details about these files..." style="min-height: 60px;"></textarea>
+          </div>
+        </div>
+
+        <!-- 5. Info Fields -->
         <div id="typeFieldsInfo" class="type-field-group" style="display: none;">
           <label class="form-label">Key-Value Pairs</label>
           <div id="infoRowsContainer" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
@@ -2114,6 +2337,7 @@
     let selectedCardIds = new Set();
     let minimizedCardIds = new Set();
     let inlineEditingCardIds = new Set();
+    let modalUploadedFiles = [];
     let maximizedCardId = null;
     let isMaximizedEditing = false;
     let editingCardId = null;
@@ -2807,7 +3031,7 @@
       div.setAttribute("data-type", card.type);
       div.setAttribute("data-id", card.id);
 
-      const typeIcons = { link: "🔗", note: "📝", code: "💻", info: "ℹ" };
+      const typeIcons = { link: "🔗", note: "📝", code: "💻", file: "📁", info: "ℹ" };
 
       // Header
       const header = document.createElement("div");
@@ -3327,6 +3551,89 @@
           }
 
           div.appendChild(codeContainer);
+        } else if (card.type === "file") {
+          const files = Array.isArray(card.files) ? card.files : [];
+          const totalBytes = files.reduce((acc, f) => acc + (f.size || 0), 0);
+
+          const filesContainer = document.createElement("div");
+          filesContainer.className = "files-container";
+
+          const filesHeader = document.createElement("div");
+          filesHeader.className = "files-header-bar";
+
+          const headerLeft = document.createElement("div");
+          headerLeft.style.display = "flex";
+          headerLeft.style.alignItems = "center";
+          headerLeft.style.gap = "6px";
+          headerLeft.innerHTML = `<span style="font-weight:600; color:var(--color-file);">📁 ${files.length} ${files.length === 1 ? 'File' : 'Files'}</span><span style="font-size:10px; color:var(--text-muted);">(${formatBytes(totalBytes)})</span>`;
+          filesHeader.appendChild(headerLeft);
+
+          const headerActions = document.createElement("div");
+          headerActions.className = "card-inline-header-actions";
+
+          if (files.length > 1) {
+            const dlAllBtn = document.createElement("button");
+            dlAllBtn.className = "btn btn-sm btn-inline-save";
+            dlAllBtn.innerHTML = `⬇️ Download All`;
+            dlAllBtn.title = "Download all files";
+            dlAllBtn.onclick = (e) => {
+              e.stopPropagation();
+              downloadAllCardFiles(card.id);
+            };
+            headerActions.appendChild(dlAllBtn);
+          }
+
+          filesHeader.appendChild(headerActions);
+          filesContainer.appendChild(filesHeader);
+
+          const gridList = document.createElement("div");
+          gridList.className = "files-grid-list";
+
+          if (files.length === 0) {
+            gridList.innerHTML = `<div style="font-size:12px; color:var(--text-muted); padding:10px; font-style:italic;">No files attached to this card.</div>`;
+          } else {
+            files.forEach((file, fIdx) => {
+              const row = document.createElement("div");
+              row.className = "file-item-row";
+
+              const isImg = file.type && file.type.startsWith("image/");
+              
+              const left = document.createElement("div");
+              left.className = "file-item-left";
+              left.innerHTML = `
+                ${isImg ? `<img src="${file.dataUrl}" class="file-thumb-preview" alt="Preview">` : `<span class="file-type-badge">${getFileIcon(file.name)}</span>`}
+                <div class="file-item-meta">
+                  <span class="file-item-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+                  <span class="file-item-size">${formatBytes(file.size)}</span>
+                </div>
+              `;
+
+              const dlBtn = document.createElement("button");
+              dlBtn.className = "btn-file-download";
+              dlBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download`;
+              dlBtn.title = `Download ${file.name}`;
+              dlBtn.onclick = (e) => {
+                e.stopPropagation();
+                downloadSingleFile(card.id, fIdx);
+              };
+
+              row.appendChild(left);
+              row.appendChild(dlBtn);
+              gridList.appendChild(row);
+            });
+          }
+
+          filesContainer.appendChild(gridList);
+
+          if (card.description) {
+            const desc = document.createElement("div");
+            desc.className = "card-description";
+            desc.style.padding = "6px 12px 10px";
+            desc.textContent = card.description;
+            filesContainer.appendChild(desc);
+          }
+
+          div.appendChild(filesContainer);
         } else if (card.type === "info") {
           const table = document.createElement("table");
           table.className = "info-table";
@@ -3702,6 +4009,150 @@
       }
     }
 
+    // ============================================================
+    // === FILE UPLOAD & DOWNLOAD HANDLERS ========================
+    // ============================================================
+    function handleFileInputChange(e) {
+      addFilesToModal(e.target.files);
+      e.target.value = "";
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      const dropzone = document.getElementById("modalFileDropzone");
+      if (dropzone) dropzone.classList.add("drag-over");
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      const dropzone = document.getElementById("modalFileDropzone");
+      if (dropzone) dropzone.classList.remove("drag-over");
+    }
+
+    function handleDropFiles(e) {
+      e.preventDefault();
+      const dropzone = document.getElementById("modalFileDropzone");
+      if (dropzone) dropzone.classList.remove("drag-over");
+      if (e.dataTransfer && e.dataTransfer.files) {
+        addFilesToModal(e.dataTransfer.files);
+      }
+    }
+
+    function addFilesToModal(fileList) {
+      if (!fileList || fileList.length === 0) return;
+      const filesArray = Array.from(fileList);
+      let loadedCount = 0;
+      
+      filesArray.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          modalUploadedFiles.push({
+            name: file.name,
+            size: file.size,
+            type: file.type || "application/octet-stream",
+            dataUrl: event.target.result,
+            lastModified: file.lastModified || Date.now()
+          });
+          loadedCount++;
+          if (loadedCount === filesArray.length) {
+            renderModalFilesList();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderModalFilesList() {
+      const container = document.getElementById("modalFilesList");
+      const countEl = document.getElementById("modalFileCount");
+      if (!container) return;
+      container.innerHTML = "";
+      if (countEl) countEl.textContent = modalUploadedFiles.length;
+
+      if (modalUploadedFiles.length === 0) {
+        container.innerHTML = `<div style="font-size: 11px; color: var(--text-muted); font-style: italic; padding: 4px;">No files uploaded yet.</div>`;
+        return;
+      }
+
+      modalUploadedFiles.forEach((file, index) => {
+        const item = document.createElement("div");
+        item.className = "modal-file-item";
+        
+        const isImg = file.type && file.type.startsWith("image/");
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+            ${isImg ? `<img src="${file.dataUrl}" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;">` : `<span>${getFileIcon(file.name)}</span>`}
+            <span style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); flex-shrink: 0;">(${formatBytes(file.size)})</span>
+          </div>
+          <button type="button" class="icon-btn" style="color: var(--status-err);" onclick="removeModalFile(${index})" title="Remove file">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function removeModalFile(index) {
+      modalUploadedFiles.splice(index, 1);
+      renderModalFilesList();
+    }
+
+    function clearModalFiles() {
+      modalUploadedFiles = [];
+      renderModalFilesList();
+    }
+
+    function downloadSingleFile(cardId, fileIndex) {
+      const card = vaultData.cards.find(c => c.id === cardId);
+      if (!card || !Array.isArray(card.files) || !card.files[fileIndex]) return;
+      const file = card.files[fileIndex];
+      downloadDataUrl(file.dataUrl, file.name);
+      toast(`⬇️ Downloading ${file.name}`, "info");
+    }
+
+    function downloadAllCardFiles(cardId) {
+      const card = vaultData.cards.find(c => c.id === cardId);
+      if (!card || !Array.isArray(card.files) || card.files.length === 0) return;
+      card.files.forEach((file, idx) => {
+        setTimeout(() => {
+          downloadDataUrl(file.dataUrl, file.name);
+        }, idx * 200);
+      });
+      toast(`⬇️ Downloading ${card.files.length} files...`, "info");
+    }
+
+    function downloadDataUrl(dataUrl, filename) {
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = filename || "download";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function formatBytes(bytes, decimals = 1) {
+      if (!bytes || bytes === 0) return "0 B";
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ["B", "KB", "MB", "GB", "TB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+    }
+
+    function getFileIcon(filename = "") {
+      const ext = filename.split(".").pop().toLowerCase();
+      if (["png", "jpg", "jpeg", "gif", "svg", "webp", "ico"].includes(ext)) return "🖼️";
+      if (["pdf"].includes(ext)) return "📄";
+      if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "📦";
+      if (["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) return "🎵";
+      if (["mp4", "webm", "mov", "avi", "mkv"].includes(ext)) return "🎬";
+      if (["js", "ts", "py", "html", "css", "json", "sql", "sh", "java", "c", "cpp"].includes(ext)) return "💻";
+      if (["doc", "docx", "txt", "md", "rtf"].includes(ext)) return "📝";
+      if (["xls", "xlsx", "csv"].includes(ext)) return "📊";
+      return "📁";
+    }
+
     async function togglePinCard(id) {
       const card = vaultData.cards.find(c => c.id === id);
       if (!card) return;
@@ -3808,6 +4259,10 @@
         } else if (cardOrNull.type === "code") {
           document.getElementById("cardCodeLang").value = cardOrNull.language || "javascript";
           document.getElementById("cardCodeSnippet").value = cardOrNull.code || "";
+        } else if (cardOrNull.type === "file") {
+          modalUploadedFiles = Array.isArray(cardOrNull.files) ? JSON.parse(JSON.stringify(cardOrNull.files)) : [];
+          document.getElementById("cardFileDescInput").value = cardOrNull.description || "";
+          renderModalFilesList();
         } else if (cardOrNull.type === "info") {
           const container = document.getElementById("infoRowsContainer");
           container.innerHTML = "";
@@ -3825,6 +4280,9 @@
         document.getElementById("cardDescInput").value = "";
         document.getElementById("cardNoteBody").value = "";
         document.getElementById("cardCodeSnippet").value = "";
+        document.getElementById("cardFileDescInput").value = "";
+        modalUploadedFiles = [];
+        renderModalFilesList();
         document.getElementById("cardPinnedInput").checked = false;
         
         const container = document.getElementById("infoRowsContainer");
@@ -3855,6 +4313,7 @@
       document.getElementById("typeFieldsLink").style.display = type === "link" ? "block" : "none";
       document.getElementById("typeFieldsNote").style.display = type === "note" ? "block" : "none";
       document.getElementById("typeFieldsCode").style.display = type === "code" ? "block" : "none";
+      document.getElementById("typeFieldsFile").style.display = type === "file" ? "block" : "none";
       document.getElementById("typeFieldsInfo").style.display = type === "info" ? "block" : "none";
 
       if (type === "note") {
@@ -3862,6 +4321,8 @@
       } else if (type === "code") {
         updateCodeModalStats(document.getElementById("cardCodeSnippet").value);
         updateCodeModalLang(document.getElementById("cardCodeLang").value);
+      } else if (type === "file") {
+        renderModalFilesList();
       }
     }
 
@@ -3966,6 +4427,9 @@
       } else if (modalActiveType === "code") {
         newCard.language = document.getElementById("cardCodeLang").value;
         newCard.code = document.getElementById("cardCodeSnippet").value;
+      } else if (modalActiveType === "file") {
+        newCard.files = [...modalUploadedFiles];
+        newCard.description = document.getElementById("cardFileDescInput").value.trim();
       } else if (modalActiveType === "info") {
         const rows = document.querySelectorAll("#infoRowsContainer .kv-row");
         newCard.fields = [];
