@@ -922,7 +922,49 @@
       word-break: break-word;
     }
 
-    /* Note Card */
+    /* Note Card & Code Card Common Styling */
+    .note-container, .code-container {
+      position: relative;
+      background: #090B10;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.light .note-container, body.light .code-container {
+      background: #F8F9FD;
+    }
+
+    .note-header-bar, .code-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #141722;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    body.light .note-header-bar, body.light .code-header-bar {
+      background: #EDF0F7;
+      color: var(--text-secondary);
+    }
+
+    .note-content-wrapper {
+      position: relative;
+      padding: 10px 12px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .note-content-wrapper.expanded {
+      max-height: none;
+    }
+
     .note-body {
       font-size: 13px;
       color: var(--text-secondary);
@@ -939,6 +981,61 @@
       overflow: hidden;
     }
 
+    .card-inline-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-inline-save {
+      background: var(--accent-primary) !important;
+      color: #FFFFFF !important;
+      border-color: var(--accent-primary) !important;
+      padding: 2px 8px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      border-radius: var(--r-sm) !important;
+    }
+
+    .btn-inline-save:hover {
+      background: var(--accent-hover) !important;
+    }
+
+    .card-inline-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #090B10;
+      border: none;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 13px;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      font-family: var(--font-ui);
+      display: block;
+      box-sizing: border-box;
+    }
+
+    body.light .card-inline-textarea {
+      background: #FFFFFF;
+    }
+
+    .card-inline-textarea.code-font {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      tab-size: 2;
+    }
+
+    .card-inline-textarea:focus {
+      background: #0D1017;
+      box-shadow: inset 0 0 0 1px var(--accent-primary);
+    }
+
+    body.light .card-inline-textarea:focus {
+      background: #FAFBFD;
+    }
+
     .toggle-expand-btn {
       background: none;
       border: none;
@@ -946,30 +1043,8 @@
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      padding: 2px 0;
-      margin-top: 4px;
-      align-self: flex-start;
-    }
-
-    /* Code Card */
-    .code-container {
-      position: relative;
-      background: #090B10;
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      overflow: hidden;
-    }
-
-    .code-header-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #141722;
       padding: 4px 10px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
+      align-self: flex-start;
     }
 
     .code-content-wrapper {
@@ -2016,6 +2091,7 @@
     let sortOption = "newest";
     let selectedCardIds = new Set();
     let minimizedCardIds = new Set();
+    let inlineEditingCardIds = new Set();
     let maximizedCardId = null;
     let isMaximizedEditing = false;
     let editingCardId = null;
@@ -3021,61 +3097,214 @@
 
           div.appendChild(linkBox);
         } else if (card.type === "note") {
-          const bodyEl = document.createElement("div");
-          bodyEl.className = "note-body truncated";
-          bodyEl.textContent = card.body || "";
-          div.appendChild(bodyEl);
+          const isEditing = inlineEditingCardIds.has(card.id);
+          const noteLines = (card.body || "").split("\n").length;
+          
+          const noteContainer = document.createElement("div");
+          noteContainer.className = "note-container";
 
-          if ((card.body || "").split("\n").length > 4 || (card.body || "").length > 200) {
-            const expBtn = document.createElement("button");
-            expBtn.className = "toggle-expand-btn";
-            expBtn.textContent = "Show more";
-            expBtn.onclick = () => {
-              const isTrunc = bodyEl.classList.toggle("truncated");
-              expBtn.textContent = isTrunc ? "Show more" : "Show less";
+          const noteHeader = document.createElement("div");
+          noteHeader.className = "note-header-bar";
+          
+          const headerLeft = document.createElement("div");
+          headerLeft.style.display = "flex";
+          headerLeft.style.alignItems = "center";
+          headerLeft.style.gap = "6px";
+          headerLeft.innerHTML = `<span style="font-weight:600; color:var(--color-note);">📝 Note</span><span style="font-size:10px; color:var(--text-muted);">(${noteLines} ${noteLines === 1 ? 'line' : 'lines'})</span>`;
+          noteHeader.appendChild(headerLeft);
+
+          const headerActions = document.createElement("div");
+          headerActions.className = "card-inline-header-actions";
+
+          if (isEditing) {
+            const saveBtn = document.createElement("button");
+            saveBtn.className = "btn btn-sm btn-inline-save";
+            saveBtn.innerHTML = `💾 Save`;
+            saveBtn.title = "Save Note (Ctrl+Enter / Ctrl+S)";
+            saveBtn.onclick = (e) => { e.stopPropagation(); saveInlineEdit(card.id, "note"); };
+
+            const cancelBtn = document.createElement("button");
+            cancelBtn.className = "btn btn-sm";
+            cancelBtn.style.padding = "2px 6px";
+            cancelBtn.style.fontSize = "11px";
+            cancelBtn.textContent = "Cancel";
+            cancelBtn.title = "Cancel editing";
+            cancelBtn.onclick = (e) => { e.stopPropagation(); cancelInlineEdit(card.id); };
+
+            headerActions.appendChild(saveBtn);
+            headerActions.appendChild(cancelBtn);
+          } else {
+            const editBtn = document.createElement("button");
+            editBtn.className = "btn btn-sm";
+            editBtn.style.padding = "2px 8px";
+            editBtn.style.fontSize = "11px";
+            editBtn.innerHTML = `✏️ Edit`;
+            editBtn.title = "Edit Note text";
+            editBtn.onclick = (e) => { e.stopPropagation(); startInlineEdit(card.id); };
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "btn btn-sm";
+            copyBtn.style.padding = "2px 8px";
+            copyBtn.style.fontSize = "11px";
+            copyBtn.textContent = "Copy";
+            copyBtn.onclick = (e) => {
+              e.stopPropagation();
+              copyToClipboard(card.body || "", "Note content copied!");
             };
-            div.appendChild(expBtn);
+
+            headerActions.appendChild(editBtn);
+            headerActions.appendChild(copyBtn);
           }
+
+          noteHeader.appendChild(headerActions);
+          noteContainer.appendChild(noteHeader);
+
+          if (isEditing) {
+            const textarea = document.createElement("textarea");
+            textarea.id = `inlineEdit_${card.id}`;
+            textarea.className = "card-inline-textarea";
+            textarea.placeholder = "Write your note here...";
+            textarea.value = card.body || "";
+            textarea.onkeydown = (e) => {
+              handleTextareaTab(e);
+              if ((e.ctrlKey || e.metaKey) && (e.key === "Enter" || e.key.toLowerCase() === "s")) {
+                e.preventDefault();
+                saveInlineEdit(card.id, "note");
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                cancelInlineEdit(card.id);
+              }
+            };
+            noteContainer.appendChild(textarea);
+          } else {
+            const wrapper = document.createElement("div");
+            wrapper.className = "note-content-wrapper";
+
+            const bodyEl = document.createElement("div");
+            bodyEl.className = "note-body";
+            bodyEl.textContent = card.body || "";
+            wrapper.appendChild(bodyEl);
+            noteContainer.appendChild(wrapper);
+
+            if ((card.body || "").split("\n").length > 6 || (card.body || "").length > 220) {
+              bodyEl.classList.add("truncated");
+              const expBtn = document.createElement("button");
+              expBtn.className = "toggle-expand-btn";
+              expBtn.textContent = "Show more";
+              expBtn.onclick = (e) => {
+                e.stopPropagation();
+                const isTrunc = bodyEl.classList.toggle("truncated");
+                expBtn.textContent = isTrunc ? "Show more" : "Show less";
+              };
+              noteContainer.appendChild(expBtn);
+            }
+          }
+
+          div.appendChild(noteContainer);
         } else if (card.type === "code") {
+          const isEditing = inlineEditingCardIds.has(card.id);
+          const codeLines = (card.code || "").split("\n").length;
+
           const codeContainer = document.createElement("div");
           codeContainer.className = "code-container";
 
           const codeHeader = document.createElement("div");
           codeHeader.className = "code-header-bar";
-          codeHeader.innerHTML = `<span>${escapeHtml(card.language || "code")}</span>`;
 
-          const copyCodeBtn = document.createElement("button");
-          copyCodeBtn.className = "btn btn-sm";
-          copyCodeBtn.style.padding = "2px 8px";
-          copyCodeBtn.style.fontSize = "11px";
-          copyCodeBtn.textContent = "Copy";
-          copyCodeBtn.onclick = (e) => {
-            e.stopPropagation();
-            copyToClipboard(card.code, "Code snippet copied!");
-          };
-          codeHeader.appendChild(copyCodeBtn);
+          const headerLeft = document.createElement("div");
+          headerLeft.style.display = "flex";
+          headerLeft.style.alignItems = "center";
+          headerLeft.style.gap = "6px";
+          headerLeft.innerHTML = `<span style="font-weight:600; color:var(--color-code);">${escapeHtml(card.language || "code")}</span><span style="font-size:10px; color:var(--text-muted);">(${codeLines} ${codeLines === 1 ? 'line' : 'lines'})</span>`;
+          codeHeader.appendChild(headerLeft);
+
+          const headerActions = document.createElement("div");
+          headerActions.className = "card-inline-header-actions";
+
+          if (isEditing) {
+            const saveBtn = document.createElement("button");
+            saveBtn.className = "btn btn-sm btn-inline-save";
+            saveBtn.innerHTML = `💾 Save`;
+            saveBtn.title = "Save Code (Ctrl+Enter / Ctrl+S)";
+            saveBtn.onclick = (e) => { e.stopPropagation(); saveInlineEdit(card.id, "code"); };
+
+            const cancelBtn = document.createElement("button");
+            cancelBtn.className = "btn btn-sm";
+            cancelBtn.style.padding = "2px 6px";
+            cancelBtn.style.fontSize = "11px";
+            cancelBtn.textContent = "Cancel";
+            cancelBtn.title = "Cancel editing";
+            cancelBtn.onclick = (e) => { e.stopPropagation(); cancelInlineEdit(card.id); };
+
+            headerActions.appendChild(saveBtn);
+            headerActions.appendChild(cancelBtn);
+          } else {
+            const editBtn = document.createElement("button");
+            editBtn.className = "btn btn-sm";
+            editBtn.style.padding = "2px 8px";
+            editBtn.style.fontSize = "11px";
+            editBtn.innerHTML = `✏️ Edit`;
+            editBtn.title = "Edit Code snippet";
+            editBtn.onclick = (e) => { e.stopPropagation(); startInlineEdit(card.id); };
+
+            const copyCodeBtn = document.createElement("button");
+            copyCodeBtn.className = "btn btn-sm";
+            copyCodeBtn.style.padding = "2px 8px";
+            copyCodeBtn.style.fontSize = "11px";
+            copyCodeBtn.textContent = "Copy";
+            copyCodeBtn.onclick = (e) => {
+              e.stopPropagation();
+              copyToClipboard(card.code, "Code snippet copied!");
+            };
+
+            headerActions.appendChild(editBtn);
+            headerActions.appendChild(copyCodeBtn);
+          }
+
+          codeHeader.appendChild(headerActions);
           codeContainer.appendChild(codeHeader);
 
-          const wrapper = document.createElement("div");
-          wrapper.className = "code-content-wrapper";
-
-          const pre = document.createElement("pre");
-          pre.className = "code-pre";
-          pre.innerHTML = highlightSyntax(card.code || "", card.language);
-          wrapper.appendChild(pre);
-          codeContainer.appendChild(wrapper);
-          div.appendChild(codeContainer);
-
-          if ((card.code || "").split("\n").length > 8) {
-            const expBtn = document.createElement("button");
-            expBtn.className = "toggle-expand-btn";
-            expBtn.textContent = "Expand Code";
-            expBtn.onclick = () => {
-              const exp = wrapper.classList.toggle("expanded");
-              expBtn.textContent = exp ? "Collapse Code" : "Expand Code";
+          if (isEditing) {
+            const textarea = document.createElement("textarea");
+            textarea.id = `inlineEdit_${card.id}`;
+            textarea.className = "card-inline-textarea code-font";
+            textarea.placeholder = "Paste or type code snippet...";
+            textarea.value = card.code || "";
+            textarea.onkeydown = (e) => {
+              handleTextareaTab(e);
+              if ((e.ctrlKey || e.metaKey) && (e.key === "Enter" || e.key.toLowerCase() === "s")) {
+                e.preventDefault();
+                saveInlineEdit(card.id, "code");
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                cancelInlineEdit(card.id);
+              }
             };
-            div.appendChild(expBtn);
+            codeContainer.appendChild(textarea);
+          } else {
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-content-wrapper";
+
+            const pre = document.createElement("pre");
+            pre.className = "code-pre";
+            pre.innerHTML = highlightSyntax(card.code || "", card.language);
+            wrapper.appendChild(pre);
+            codeContainer.appendChild(wrapper);
+
+            if ((card.code || "").split("\n").length > 8) {
+              const expBtn = document.createElement("button");
+              expBtn.className = "toggle-expand-btn";
+              expBtn.textContent = "Expand Code";
+              expBtn.onclick = (e) => {
+                e.stopPropagation();
+                const exp = wrapper.classList.toggle("expanded");
+                expBtn.textContent = exp ? "Collapse Code" : "Expand Code";
+              };
+              codeContainer.appendChild(expBtn);
+            }
           }
+
+          div.appendChild(codeContainer);
         } else if (card.type === "info") {
           const table = document.createElement("table");
           table.className = "info-table";
@@ -3405,6 +3634,40 @@
         </button>
       `;
       return row;
+    }
+
+    function startInlineEdit(id) {
+      inlineEditingCardIds.add(id);
+      renderCards();
+      setTimeout(() => {
+        const el = document.getElementById(`inlineEdit_${id}`);
+        if (el) {
+          el.focus();
+          el.selectionStart = el.selectionEnd = el.value.length;
+        }
+      }, 50);
+    }
+
+    async function saveInlineEdit(id, type) {
+      const card = vaultData.cards.find(c => c.id === id);
+      const el = document.getElementById(`inlineEdit_${id}`);
+      if (card && el) {
+        if (type === "note") {
+          card.body = el.value;
+        } else if (type === "code") {
+          card.code = el.value;
+        }
+        card.updatedAt = new Date().toISOString();
+        inlineEditingCardIds.delete(id);
+        await saveData();
+        renderCards();
+        toast(`✓ ${type === 'code' ? 'Code' : 'Note'} saved!`, "success");
+      }
+    }
+
+    function cancelInlineEdit(id) {
+      inlineEditingCardIds.delete(id);
+      renderCards();
     }
 
     function handleTextareaTab(e) {
